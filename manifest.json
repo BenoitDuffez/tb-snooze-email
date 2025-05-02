@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Snooze email",
-  "version": "1.0",
+  "version": "1.1",
   "description": "Add reminders to emails in Thunderbird",
   "browser_specific_settings": {
     "gecko": {
