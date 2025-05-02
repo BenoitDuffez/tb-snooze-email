@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Set Reminder</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 10px;
+        }
+
+        label, input, button {
+            display: block;
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+<form>
+    <h3>Set Reminder</h3>
+    <label for="delay">Delay (e.g., 5d for 5 days):</label>
+    <input type="text" id="delay" placeholder="5d" autofocus>
+    <small>Enter delay as &lt;number&gt;&lt;unit&gt;: d (days), h (hours), m (minutes)</small>
+    <button id="save">Save</button>
+</form>
+<script src="popup.js"></script>
+</body>
+</html>
