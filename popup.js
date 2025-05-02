@@ -19,7 +19,7 @@ document.addEventListener("keydown", (event) => event.key === "Escape" ? window.
 
 function parseDelay(input) {
     if (input.trim().length === 0) {
-        return parseDelay('5s');
+        return parseDelay('5d');
     }
 
     const match = input.match(/^(\d+)\s*([wdhms])$/);
