@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>Set Reminder</title>
     <style>
         body {
@@ -19,9 +20,9 @@
     <h3>Set Reminder</h3>
     <label for="delay">Delay (e.g., 5d for 5 days):</label>
     <input type="text" id="delay" placeholder="5d" autofocus>
-    <small>Enter delay as &lt;number&gt;&lt;unit&gt;: d (days), h (hours), m (minutes)</small>
+    <small>Enter delay as &lt;number&gt;&lt;unit&gt;: w (weeks), d (days), h (hours), m (minutes)</small>
     <button id="save">Save</button>
 </form>
-<script src="popup.js"></script>
+<script src="popup.js" type="module"></script>
 </body>
 </html>
