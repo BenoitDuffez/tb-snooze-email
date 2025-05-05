@@ -1,15 +1,18 @@
-document.getElementById("save").addEventListener("click", () => {
+document.getElementById("save").addEventListener("click", async () => {
     try {
         // Get message params from URL
-        const reminder = JSON.parse(atob(new URLSearchParams(window.location.search).get("data")));
-        reminder.type = "setReminder";
-        reminder.setDate = Date.now();
-        reminder.dueDate = Date.now() + parseDelay(document.getElementById("delay").value);
+        let urlSearchParams = new URLSearchParams(window.location.search);
+        const reminder = {
+            id: atob(urlSearchParams.get("id")),
+            author: atob(urlSearchParams.get("author")),
+            subject: atob(urlSearchParams.get("subject")),
+            type: "setReminder",
+            setDate: Date.now(),
+            dueDate: Date.now() + parseDelay(document.getElementById("delay").value),
+        };
 
-        // Send reminder details to the background script
-        browser.runtime.sendMessage(reminder);
-
-        window.close(); // Close the popup
+        window.close();
+        await browser.runtime.sendMessage(reminder);
     } catch (error) {
         alert(error.message);
     }

@@ -1,19 +1,17 @@
-getAlarmName = (snooze) => `snooze_${snooze.id}_${snooze.setDate}`;
+getAlarmName = (snooze) => `snooze_${snooze.setDate}`;
 
 // When the "Set Reminder" button is clicked
 browser.messageDisplayAction.onClicked.addListener(async (tab) => {
     const email = await browser.messageDisplay.getDisplayedMessage(tab.id);
-    const data = {
-        id: email.id,
-        subject: email.subject,
-        author: email.author,
-    };
-    browser.windows.create({
-        url: `popup.html?data=` + btoa(JSON.stringify(data)),
-        type: "popup",
-        width: 400,
-        height: 250
-    });
+    const fullMessage = await browser.messages.getFull(email.id);
+    let headerMessageId = fullMessage.headers["message-id"]?.[0];
+    if (!headerMessageId) {
+        console.error("No headerMessageId found for message", fullMessage);
+        return;
+    }
+    headerMessageId = headerMessageId.replace(/^</g, "").replace(/>$/, "");
+    let url = `popup.html?id=` + btoa(headerMessageId) + `&author=` + btoa(email.author) + `&subject=` + btoa(email.subject);
+    browser.windows.create({url: url, type: "popup", width: 400, height: 250});
 });
 
 // Handle messages from the popup to set reminders
@@ -42,8 +40,11 @@ browser.alarms.onAlarm.addListener(async (alarm) => {
 // Listen for notification clicks
 browser.notifications.onClicked.addListener(async (name) => {
     let storage = await browser.storage.local.get();
-    await browser.storage.local.remove(name);
-    await browser.messageDisplay.open({messageId: storage[name].id, location: "window"});
+    console.log(`Notification clicked: ${name}`, storage);
+    let snooze = storage[name];
+    snooze.clicked = true;
+    await browser.storage.local.set({[name]: snooze});
+    await browser.messageDisplay.open({headerMessageId: snooze.id, location: "window"});
 });
 
 // Restore alarms from storage on startup
@@ -56,6 +57,9 @@ browser.notifications.onClicked.addListener(async (name) => {
             if (snooze.dueDate > now) {
                 console.log(`Restoring ${alarmName} for ${new Date(snooze.dueDate).toLocaleString()}`);
                 browser.alarms.create(alarmName, {when: snooze.dueDate});
+            } else if (snooze.clicked === true) {
+                console.log(`Alarm ${alarmName} was for ${new Date(snooze.dueDate).toLocaleString()}, but was clicked - discard`);
+                await browser.storage.local.remove(alarmName);
             } else {
                 console.log(`Alarm ${alarmName} was for ${new Date(snooze.dueDate).toLocaleString()}, trigger in 5s`);
                 browser.alarms.create(alarmName, {when: now + 5000});
